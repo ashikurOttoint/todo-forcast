@@ -1,9 +1,11 @@
 import React from 'react';
+import moment from 'moment';
 import styled from 'styled-components';
-import SearchCity from './SearchCity';
+import './style/index.css';
+import SearchCity from './components/SearchCity';
 import device from '../responsive/device-detect';
-import Result from './Result';
-import NotFound from './NotFound';
+import Result from './components/Result';
+import NotFound from './components/NotFound';
 
 const AppTitle = styled.h1`
   display: block;
@@ -58,7 +60,7 @@ const WeatherWrapper = styled.div`
   position: relative;
 `;
 
-class App extends React.Component {
+class WeatherForcast extends React.Component {
   state = {
     value: '',
     weatherInfo: null,
@@ -74,10 +76,10 @@ class App extends React.Component {
   handleSearchCity = e => {
     e.preventDefault();
     const { value } = this.state;
-    const APIkey = process.env.REACT_APP_API_KEY;
+    const APIkey = '0b36b0005652550a4b9fbfab44b5e703';
 
     const weather = `https://api.openweathermap.org/data/2.5/weather?q=${value}&APPID=${APIkey}&units=metric`;
-    const forecast = `https://api.openweathermap.org/data/2.5/forecast?q=${value}&APPID=${APIkey}&units=metric`;
+    const forecast = `https://api.openweathermap.org/data/2.5/forecast?q=${value}&APPID=${APIkey}&units=metric&exclude=minutely,hourly,alerts`;
 
     Promise.all([fetch(weather), fetch(forecast)])
       .then(([res1, res2]) => {
@@ -87,32 +89,16 @@ class App extends React.Component {
         throw Error(res1.statusText, res2.statusText);
       })
       .then(([data1, data2]) => {
-        const months = [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'Nocvember',
-          'December',
-        ];
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const currentDate = new Date();
-        const date = `${days[currentDate.getDay()]} ${currentDate.getDate()} ${
-          months[currentDate.getMonth()]
-        }`;
+
+        const currentDate = moment().format("MMM Do YY");
+       
         const sunset = new Date(data1.sys.sunset * 1000).toLocaleTimeString().slice(0, 5);
         const sunrise = new Date(data1.sys.sunrise * 1000).toLocaleTimeString().slice(0, 5);
 
         const weatherInfo = {
           city: data1.name,
           country: data1.sys.country,
-          date,
+          date: currentDate,
           description: data1.weather[0].description,
           main: data1.weather[0].main,
           temp: data1.main.temp,
@@ -143,8 +129,8 @@ class App extends React.Component {
   render() {
     const { value, weatherInfo, error } = this.state;
     return (
-      <>
-        <AppTitle showLabel={(weatherInfo || error) && true}>Weather app</AppTitle>
+      <div className="weather-forcast">
+        <AppTitle showLabel={(weatherInfo || error) && true}>Weather Forcasting</AppTitle>
         <WeatherWrapper>
           <AppTitle secondary showResult={(weatherInfo || error) && true}>
             Weather app
@@ -158,9 +144,9 @@ class App extends React.Component {
           {weatherInfo && <Result weather={weatherInfo} />}
           {error && <NotFound error={error} />}
         </WeatherWrapper>
-      </>
+      </div>
     );
   }
 }
 
-export default App;
+export default WeatherForcast;
