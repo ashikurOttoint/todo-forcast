@@ -69,7 +69,7 @@ const SearchCity = ({ submit, value, change, showResult }) => {
   return (
     <>
       <SearchBar showResult={showResult} onSubmit={submit}>
-        <SearchInput type="text" value={value} placeholder="Enter city" onChange={change} />
+        <SearchInput type="text" value={value} placeholder="Type city name and hit Enter" onChange={change} />
         <SearchIcon>
           <FontAwesomeIcon icon={faSearch} />
         </SearchIcon>
